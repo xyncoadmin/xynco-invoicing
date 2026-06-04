@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-function CheckoutForm({ invoiceId }: { invoiceId: string }) {
+function CheckoutForm({ invoiceId, clientSecret }: { invoiceId: string; clientSecret: string }) {
   const stripe = useStripe()
   const elements = useElements()
   const router = useRouter()
@@ -21,14 +21,6 @@ function CheckoutForm({ invoiceId }: { invoiceId: string }) {
 
     const { error: submitError } = await elements.submit()
     if (submitError) { setError(submitError.message ?? 'Error'); setLoading(false); return }
-
-    const res = await fetch('/api/stripe/create-payment-intent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ invoiceId }),
-    })
-    const { clientSecret, error: apiError } = await res.json()
-    if (apiError) { setError(apiError); setLoading(false); return }
 
     const { error: confirmError } = await stripe.confirmPayment({
       elements,
@@ -70,7 +62,7 @@ export function StripeCardForm({ invoiceId }: { invoiceId: string }) {
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
-      <CheckoutForm invoiceId={invoiceId} />
+      <CheckoutForm invoiceId={invoiceId} clientSecret={clientSecret} />
     </Elements>
   )
 }
