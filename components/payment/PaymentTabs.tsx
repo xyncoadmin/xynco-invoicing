@@ -1,6 +1,9 @@
 'use client'
 import { useState } from 'react'
 import { ManualPaymentInstructions } from './ManualPaymentInstructions'
+import { StripeCardForm } from './StripeCardForm'
+import { PayPalButton } from './PayPalButton'
+import { CryptoCheckout } from './CryptoCheckout'
 
 type Tab = 'card' | 'paypal' | 'crypto' | 'etransfer' | 'direct_deposit' | 'venmo'
 const TABS: { key: Tab; label: string }[] = [
@@ -44,21 +47,9 @@ export function PaymentTabs({ invoiceId, amount, currency }: Props) {
       </div>
 
       <div className="p-4">
-        {active === 'card' && (
-          <div className="text-sm text-center py-4" style={{ color: '#9CA3AF' }}>
-            Card payment powered by Stripe — loads after Stripe is configured (Task 12).
-          </div>
-        )}
-        {active === 'paypal' && (
-          <div className="text-sm text-center py-4" style={{ color: '#9CA3AF' }}>
-            PayPal — loads after PayPal is configured (Task 13).
-          </div>
-        )}
-        {active === 'crypto' && (
-          <div className="text-sm text-center py-4" style={{ color: '#9CA3AF' }}>
-            Crypto via Coinbase Commerce — loads after configured (Task 14).
-          </div>
-        )}
+        {active === 'card' && <StripeCardForm invoiceId={invoiceId} />}
+        {active === 'paypal' && <PayPalButton invoiceId={invoiceId} currency={currency} />}
+        {active === 'crypto' && <CryptoCheckout invoiceId={invoiceId} />}
         {(active === 'etransfer' || active === 'direct_deposit' || active === 'venmo') && (
           <ManualPaymentInstructions
             method={active}
