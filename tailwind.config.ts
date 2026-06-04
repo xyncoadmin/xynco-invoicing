@@ -1,3 +1,4 @@
+// Retained for IDE autocomplete and tooling. Tailwind v4 uses @theme in globals.css as the canonical token source.
 import type { Config } from 'tailwindcss'
 
 const config: Config = {

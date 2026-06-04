@@ -21,6 +21,7 @@ export interface InvoiceItem {
   description: string
   quantity: number
   rate: number
+  /** Derived: quantity * rate. Stored in DB for query performance. Do not set manually. */
   subtotal: number
 }
 
@@ -31,8 +32,10 @@ export interface Invoice {
   status: InvoiceStatus
   issue_date: string
   due_date: string
+  /** Sum of all line item subtotals. */
   subtotal: number
   tax_rate: number
+  /** Derived: subtotal * tax_rate. */
   tax_amount: number
   total: number
   notes: string | null
@@ -52,6 +55,7 @@ export interface Subscription {
   status: SubscriptionStatus
   next_billing_date: string
   client?: Client
+  created_at: string
 }
 
 export interface Payment {
@@ -59,6 +63,7 @@ export interface Payment {
   invoice_id: string
   method: PaymentMethod
   amount: number
+  currency: Currency
   status: PaymentStatus
   confirmed_at: string | null
   stripe_payment_intent_id: string | null
