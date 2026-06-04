@@ -13,11 +13,12 @@ const labels: Record<InvoiceStatus, string> = {
   draft: 'Draft', sent: 'Sent', paid: 'Paid', overdue: 'Overdue', void: 'Void'
 }
 
-export function StatusBadge({ status }: { status: InvoiceStatus }) {
+export function StatusBadge({ status, className }: { status: InvoiceStatus; className?: string }) {
   return (
     <span className={cn(
       'inline-flex items-center px-2.5 py-0.5 rounded-pill text-xs font-mono font-medium border',
-      statusStyles[status]
+      statusStyles[status],
+      className
     )}>
       {labels[status]}
     </span>
