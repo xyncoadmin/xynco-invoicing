@@ -17,6 +17,7 @@ export default function LoginPage() {
     setError(null)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) { setError(error.message); setLoading(false); return }
+    router.refresh()
     router.push('/')
   }
 
@@ -31,16 +32,18 @@ export default function LoginPage() {
         </div>
         <form onSubmit={handleLogin} className="bg-navy border border-wire rounded-sm p-8 flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-steel font-medium">Email</label>
+            <label htmlFor="email" className="text-xs text-steel font-medium">Email</label>
             <input
+              id="email"
               type="email" required value={email} onChange={e => setEmail(e.target.value)}
               className="bg-abyss border border-wire rounded-sm px-3 py-2 text-sm text-cloud outline-none focus:border-cyan transition-colors"
               placeholder="you@xynco.io"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-steel font-medium">Password</label>
+            <label htmlFor="password" className="text-xs text-steel font-medium">Password</label>
             <input
+              id="password"
               type="password" required value={password} onChange={e => setPassword(e.target.value)}
               className="bg-abyss border border-wire rounded-sm px-3 py-2 text-sm text-cloud outline-none focus:border-cyan transition-colors"
             />
