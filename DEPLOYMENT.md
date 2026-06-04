@@ -17,6 +17,7 @@ Required services to set up:
 2. Import repo in Vercel
 3. Add all environment variables from `.env.local.example`
 4. Update `NEXT_PUBLIC_APP_URL` to your Vercel URL or custom domain
+5. Set `CRON_SECRET` to any random secret string — this protects the `/api/cron/mark-overdue` endpoint that Vercel calls daily to mark overdue invoices
 
 ## Stripe Webhook (Production)
 
