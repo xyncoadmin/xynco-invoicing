@@ -25,9 +25,14 @@ export async function POST(request: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
   if (processedItems.length > 0) {
-    await supabase.from('invoice_items').insert(
+    const { error: itemsError } = await supabase.from('invoice_items').insert(
       processedItems.map((item: { description: string; quantity: number; rate: number; subtotal: number }) => ({ ...item, invoice_id: invoice.id }))
     )
+    if (itemsError) {
+      // Delete the orphaned invoice header to avoid inconsistent state
+      await supabase.from('invoices').delete().eq('id', invoice.id)
+      return NextResponse.json({ error: 'Failed to save line items' }, { status: 500 })
+    }
   }
 
   return NextResponse.json(invoice)

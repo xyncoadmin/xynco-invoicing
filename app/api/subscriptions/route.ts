@@ -42,17 +42,27 @@ export async function POST(request: Request) {
     metadata: { client_id },
   })
 
-  const { data: sub, error } = await supabase.from('subscriptions').insert({
-    client_id,
-    stripe_subscription_id: subscription.id,
-    amount,
-    currency,
-    interval,
-    status: 'active',
-    next_billing_date: getNextBillingDate(interval as SubscriptionInterval),
-  }).select().single()
+  let sub
+  try {
+    const { data, error } = await supabase.from('subscriptions').insert({
+      client_id,
+      stripe_subscription_id: subscription.id,
+      amount,
+      currency,
+      interval,
+      status: 'active',
+      next_billing_date: getNextBillingDate(interval as SubscriptionInterval),
+    }).select().single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    if (error) throw error
+    sub = data
+  } catch (err) {
+    // Rollback: cancel the Stripe subscription so customer isn't billed for an orphaned sub
+    await stripe.subscriptions.cancel(subscription.id)
+    const message = err instanceof Error ? err.message : 'Database error'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+
   return NextResponse.json(sub)
 }
 

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import crypto from 'crypto'
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   if (event.event?.type === 'charge:confirmed') {
     const { invoiceId } = event.event.data.metadata ?? {}
     if (invoiceId) {
-      const supabase = await createClient()
+      const supabase = createServiceClient()
       const amount = parseFloat(event.event.data.pricing?.local?.amount ?? '0')
       const currency = (event.event.data.pricing?.local?.currency ?? 'CAD').toUpperCase()
       await supabase.from('invoices').update({ status: 'paid' }).eq('id', invoiceId)
