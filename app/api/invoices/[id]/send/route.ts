@@ -17,7 +17,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
   const items = (invoice.items ?? []) as { description: string; quantity: number; rate: number; subtotal: number }[]
   const payUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pay/${invoice.id}`
 
-  const { error: emailError } = await sendInvoiceEmail({
+  await sendInvoiceEmail({
     to: client.email,
     invoiceNumber: invoice.number,
     clientName: client.name,
@@ -27,10 +27,6 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
     payUrl,
     items,
   })
-
-  if (emailError) {
-    return NextResponse.json({ error: 'Failed to send email' }, { status: 502 })
-  }
 
   await supabase.from('invoices').update({ status: 'sent' }).eq('id', id)
 
